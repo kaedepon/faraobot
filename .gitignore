@@ -1,3 +1,11 @@
+### Project files:
+
+## Settings
+/settings/auth.json
+
+
+### 
+
 *.gem
 *.rbc
 /.config

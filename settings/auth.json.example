@@ -1,0 +1,6 @@
+{
+	"bot": {
+		"token": "your_bot_token",
+		"client_id": 1234567890
+	},
+}
