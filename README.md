@@ -1,0 +1,2 @@
+# faraobot
+Discord bot.
