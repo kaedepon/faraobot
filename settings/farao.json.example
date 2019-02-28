@@ -1,0 +1,62 @@
+{
+	"dropRatio": 10,
+	"exp": 116805,
+	"sleepBasic": 3600,
+	"sleepMargin": 1800,
+	"file": {
+		"lock": "C:\\faraobot\\lock.txt",
+		"result": "C:\\faraobot\\faraoresult.txt",
+		"rank": "C:\\faraobot\\faraorank.txt",
+		"card": "C:\\faraobot\\faraocard.txt",
+		"exp": "C:\\faraobot\\faraoexp.txt"
+	},
+	"drop1": {
+		"emoji": "<:syakujou:123456789012345678>",
+		"border": 5819
+	},
+	"drop2": {
+		"emoji": "<:tutan:123456789012345678>",
+		"border": 2500
+	},
+	"drop3": {
+		"emoji": "<:jewelcrown:123456789012345678>",
+		"border": 500
+	},
+	"drop4": {
+		"emoji": "<:tablet:123456789012345678>",
+		"border": 300
+	},
+	"drop5": {
+		"emoji": "<:holyrobe:123456789012345678>",
+		"border": 150
+	},
+	"drop6": {
+		"emoji": "<:taiyouken:123456789012345678>",
+		"border": 100
+	},
+	"drop7": {
+		"emoji": "<:bazerald:123456789012345678>",
+		"border": 80
+	},
+	"drop8": {
+		"emoji": "<:card:123456789012345678>",
+		"border": 1
+	},
+	"drop9": {
+		"emoji": "<:applausesandals:123456789012345678>",
+		"border": 0
+	},
+	"dropEx": {
+		"emoji": "<:ringo:123456789012345678>",
+		"border": 0
+	},
+	"dropEx2": {
+		"emoji": "<:raikan:123456789012345678>"
+	},
+	"farao": {
+		"emoji": "<:farao:123456789012345678>"
+	},
+	"noDrop": {
+		"emoji": "<:kurobuta:123456789012345678>"
+	}
+}

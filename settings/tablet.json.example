@@ -1,0 +1,13 @@
+{
+	"file": {
+		"tablet": "C:\\faraobot\\tablet.txt",
+		"tablist": "C:\\faraobot\\tablist.txt"
+	},
+	"seiren": [
+		60,
+		50,
+		20,
+		20,
+		20
+	]
+}
