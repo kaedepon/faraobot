@@ -6,57 +6,61 @@ require 'bigdecimal'
 require 'json'
 
 # 設定ファイル読み込み
-settings_file_path = './settings/auth.json'
-setting_auth = open(settings_file_path) do |io|
+setting_auth = open('./settings/auth.json') do |io|
+  JSON.load(io)
+end
+setting_farao= open('./settings/farao.json') do |io|
+  JSON.load(io)
+end
+setting_tablet = open('./settings/tablet.json') do |io|
   JSON.load(io)
 end
 
-
 #定数の設定
 #ドロップ倍率
-DROPRATIO = 10
+DROPRATIO = setting_farao['dropRatio']
 
 #ドロップアイテムの絵文字コード
-EMOJDROP1 = "<:syakujou:373896963961126912>"
-EMOJDROP2 = "<:tutan:384655528627929089>"
-EMOJDROP3 = "<:jewelcrown:385027635639484416>"
-EMOJDROP4 = "<:tablet:374169803524538378>"
-EMOJDROP5 = "<:holyrobe:385027612189261825>"
-EMOJDROP6 = "<:taiyouken:385027663674343424>"
-EMOJDROP7 = "<:bazerald:385027584297271296>"
-EMOJDROP8 = "<:card:368008359556808704>"
-EMOJDROP9 = "<:applausesandals:543593011871875103>"
-EMOJDROPEX = "<:ringo:374155638323937280>"
-EMOJDROPEX2 = "<:raikan:388852406202531841>"
-EMOJFARAO = "<:farao:368716821219770370>"
-EMOJNODROP = "<:kurobuta:376334090145759233>"
+EMOJDROP1 = setting_farao['drop1']['emoji']
+EMOJDROP2 = setting_farao['drop2']['emoji']
+EMOJDROP3 = setting_farao['drop3']['emoji']
+EMOJDROP4 = setting_farao['drop4']['emoji']
+EMOJDROP5 = setting_farao['drop5']['emoji']
+EMOJDROP6 = setting_farao['drop6']['emoji']
+EMOJDROP7 = setting_farao['drop7']['emoji']
+EMOJDROP8 = setting_farao['drop8']['emoji']
+EMOJDROP9 = setting_farao['drop9']['emoji']
+EMOJDROPEX = setting_farao['dropEx']['emoji']
+EMOJDROPEX2 = setting_farao['dropEx2']['emoji']
+EMOJFARAO = setting_farao['farao']['emoji']
+EMOJNODROP = setting_farao['noDrop']['emoji']
 
 #ドロップアイテムのドロップ率
-BORDERDROP1 = 5819
-BORDERDROP2 = 2500
-BORDERDROP3 = 500
-BORDERDROP4 = 300
-BORDERDROP5 = 150
-BORDERDROP6 = 100
-BORDERDROP7 = 80
-BORDERDROP8 = 1
-BORDERDROP9 = 0
-BORDERDROPEX = 0
+BORDERDROP1 = setting_farao['drop1']['border']
+BORDERDROP2 = setting_farao['drop2']['border']
+BORDERDROP3 = setting_farao['drop3']['border']
+BORDERDROP4 = setting_farao['drop4']['border']
+BORDERDROP5 = setting_farao['drop5']['border']
+BORDERDROP6 = setting_farao['drop6']['border']
+BORDERDROP7 = setting_farao['drop7']['border']
+BORDERDROP8 = setting_farao['drop8']['border']
+BORDERDROP9 = setting_farao['drop9']['border']
+BORDERDROPEX = setting_farao['dropEx']['border']
 
 #精錬成功率
-SEIREN = [60, 50, 20, 20, 20]
+SEIREN = setting_tablet['seiren']
 
 #ファイルパス
-FILELOCK = "C:\\faraobot\\lock.txt"
-FILERESULT = "C:\\faraobot\\faraoresult.txt"
-FILERANK = "C:\\faraobot\\faraorank.txt"
-FILECARD = "C:\\faraobot\\faraocard.txt"
-FILEEXP = "C:\\faraobot\\faraoexp.txt"
-FILETABLET = "C:\\faraobot\\tablet.txt"
-FILETABLIST = "C:\\faraobot\\tablist.txt"
+FILELOCK = setting_farao['file']['lock']
+FILERESULT = setting_farao['file']['result']
+FILERANK = setting_farao['file']['rank']
+FILECARD = setting_farao['file']['card']
+FILEEXP = setting_farao['file']['exp']
+FILETABLET = setting_tablet['file']['tablet']
+FILETABLIST = setting_tablet['file']['tablist']
 
 #ファラオ経験値
-FARAOEXP = 116805
+FARAOEXP = setting_farao['exp']
 
 #resultファイルの本日分データ初期化
 today_down = ""
@@ -332,7 +336,7 @@ bot.message(containing: EMOJFARAO) do |event|
         
         #次の沸き時間を設定
         now = Time.now
-        sleeptime = 3600 + random.rand(1800)
+        sleeptime = setting_farao['sleepBasic'] + random.rand(setting_farao['sleepMargin'])
         
         #ロックファイルの沸き時間を更新
         lock.puts((now + sleeptime).strftime('%Y%m%d%H%M%S'))
