@@ -70,21 +70,7 @@ today_down = ""
 today_drop = []
 total_down = ""
 total_drop = []
-
-File.open(FILERESULT, 'r') do |f|
-  today_down = f.gets
-  today_drop = f.gets
-  total_down = f.gets
-  total_drop = f.gets
-end
-
-File.open(FILERESULT, 'w') do |f|
-  f.puts("0")
-  f.puts("0,0,0,0,0,0,0,0,0")
-  f.puts(total_down)
-  f.puts(total_drop)
-  f.close
-end
+summary_day = ""
 
 #精錬回数初期化
 total_tab = ""
@@ -325,6 +311,7 @@ bot.message(containing: EMOJFARAO) do |event|
           f1.puts(today_drop.join(","))
           f1.puts(total_down.to_i + 1)
           f1.puts(total_drop.join(","))
+          f1.puts(summary_day.to_i)
           f1.close
         end
         
@@ -438,40 +425,7 @@ bot.message(containing: EMOJDROP4) do |event|
 end
 
 bot.message(containing: "/faresult") do |event|
-  #resultファイルから討伐数とドロップアイテム数を取得し表示
-  File.open(FILERESULT, 'r') do |f|
-    today_down = f.gets
-    today_drop = f.gets.split(",")
-    total_down = f.gets
-    total_drop = f.gets.split(",")
-    
-    msg = "■討伐数\n"
-    msg = msg + "本日：" + today_down
-    msg = msg + "合計：" + total_down + "\n"
-    msg = msg + "■ドロップアイテム\n"
-    msg = msg + "本日："
-    msg = msg + EMOJDROP1 + today_drop[0]
-    msg = msg + EMOJDROP2 + today_drop[1]
-    msg = msg + EMOJDROP3 + today_drop[2]
-    msg = msg + EMOJDROP4 + today_drop[3]
-    msg = msg + EMOJDROP5 + today_drop[4]
-    msg = msg + EMOJDROP6 + today_drop[5]
-    msg = msg + EMOJDROP7 + today_drop[6]
-    msg = msg + EMOJDROP8 + today_drop[7]
-    msg = msg + EMOJDROP9 + today_drop[8]
-    msg = msg + "合計："
-    msg = msg + EMOJDROP1 + total_drop[0]
-    msg = msg + EMOJDROP2 + total_drop[1]
-    msg = msg + EMOJDROP3 + total_drop[2]
-    msg = msg + EMOJDROP4 + total_drop[3]
-    msg = msg + EMOJDROP5 + total_drop[4]
-    msg = msg + EMOJDROP6 + total_drop[5]
-    msg = msg + EMOJDROP7 + total_drop[6]
-    msg = msg + EMOJDROP8 + total_drop[7]
-    msg = msg + EMOJDROP9 + total_drop[8]
-    
-    event.respond msg
-  end
+  event.respond get_summary() 
 end
 
 bot.message(containing: "/farank") do |event|
@@ -698,4 +652,75 @@ bot.message(containing: "/fastop") do |event|
   end
 end
 
-bot.run
+#起動時
+bot.ready do |event|
+  File.open(FILERESULT, 'r') do |f|
+    today_down = f.gets
+    today_drop = f.gets.split(",")
+    total_down = f.gets
+    total_drop = f.gets.split(",")
+    summary_day = f.gets
+  end
+end
+
+#resultファイルから討伐数とドロップアイテム数を取得し表示
+def get_summary() 
+  msg=""
+  File.open(FILERESULT, 'r') do |f|
+    today_down = f.gets
+    today_drop = f.gets.split(",")
+    total_down = f.gets
+    total_drop = f.gets.split(",")
+    
+    msg = "■討伐数\n"
+    msg = msg + "本日：" + today_down
+    msg = msg + "合計：" + total_down + "\n"
+    msg = msg + "■ドロップアイテム\n"
+    msg = msg + "本日："
+    msg = msg + EMOJDROP1 + today_drop[0]
+    msg = msg + EMOJDROP2 + today_drop[1]
+    msg = msg + EMOJDROP3 + today_drop[2]
+    msg = msg + EMOJDROP4 + today_drop[3]
+    msg = msg + EMOJDROP5 + today_drop[4]
+    msg = msg + EMOJDROP6 + today_drop[5]
+    msg = msg + EMOJDROP7 + today_drop[6]
+    msg = msg + EMOJDROP8 + today_drop[7]
+    msg = msg + EMOJDROP9 + today_drop[8]
+    msg = msg + "合計："
+    msg = msg + EMOJDROP1 + total_drop[0]
+    msg = msg + EMOJDROP2 + total_drop[1]
+    msg = msg + EMOJDROP3 + total_drop[2]
+    msg = msg + EMOJDROP4 + total_drop[3]
+    msg = msg + EMOJDROP5 + total_drop[4]
+    msg = msg + EMOJDROP6 + total_drop[5]
+    msg = msg + EMOJDROP7 + total_drop[6]
+    msg = msg + EMOJDROP8 + total_drop[7]
+    msg = msg + EMOJDROP9 + total_drop[8]
+  end
+  return msg
+end
+
+bot.run :async
+
+#非同期のため、イベント待機
+loop do
+  sleep(0.1)
+  current_day = Time.new
+
+  #集計日付が変わっていれば集計値初期化
+  if current_day.strftime('%Y%m%d').to_i > summary_day.to_i
+    #初期化前に今日の結果を通知
+    msg = get_summary()
+    bot.send_message(CHANNELID, msg)
+
+    summary_day = current_day.strftime('%Y%m%d').to_i
+    File.open(FILERESULT, 'w') do |f|
+      f.puts("0")
+      f.puts("0,0,0,0,0,0,0,0,0")
+      f.puts(total_down)
+      f.puts(total_drop.join(","))
+      f.puts(summary_day)
+      f.close
+    end
+  end
+end
