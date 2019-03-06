@@ -20,6 +20,9 @@ end
 #ドロップ倍率
 DROPRATIO = setting_farao['dropRatio']
 
+#メッセージ通知チャンネル
+CHANNELID = setting_auth['bot']['channel_id']
+
 #ドロップアイテムの絵文字コード
 EMOJDROP1 = setting_farao['drop1']['emoji']
 EMOJDROP2 = setting_farao['drop2']['emoji']
