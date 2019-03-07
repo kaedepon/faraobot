@@ -87,23 +87,6 @@ end
 faraotime = ""
 sleeptime = 0
 now = Time.now
-File.open(FILELOCK, 'r') do |lock|
-  #ファラオの沸き時間を取得
-  faraotime = lock.gets
-end
-
-#沸き時間まで待機
-if now.strftime('%Y%m%d%H%M%S').to_i < faraotime.to_i
-  sleeptime =  BigDecimal((Time.parse(faraotime) - now).to_s).floor(0).to_f.to_i
-  sleep sleeptime
-else
-  File.open(FILELOCK, 'w') do |lock|
-    #ロックファイルの沸き時間を更新
-    lock.puts(now.strftime('%Y%m%d%H%M%S'))
-  end
-end
-
-sleep(1)
 
 #接続先BOTの設定
 bot = Discordrb::Bot.new token: setting_auth['bot']['token'], client_id: setting_auth['bot']['client_id']
@@ -329,7 +312,8 @@ bot.message(containing: EMOJFARAO) do |event|
         sleeptime = setting_farao['sleepBasic'] + random.rand(setting_farao['sleepMargin'])
         
         #ロックファイルの沸き時間を更新
-        lock.puts((now + sleeptime).strftime('%Y%m%d%H%M%S'))
+        faraotime = (now + sleeptime).strftime('%Y%m%d%H%M%S')
+        lock.puts(faraotime)
         
         #ファイルロック解除
         lock.flock(File::LOCK_UN)
@@ -340,8 +324,6 @@ bot.message(containing: EMOJFARAO) do |event|
     
     #沸き時間が経過するまでBOTをオフライン表示
     bot.invisible
-    sleep sleeptime
-    bot.online
   end
 end
 
@@ -654,12 +636,34 @@ end
 
 #起動時
 bot.ready do |event|
+  #機動直後は非表示状態
+  bot.invisible
+
   File.open(FILERESULT, 'r') do |f|
     today_down = f.gets
     today_drop = f.gets.split(",")
     total_down = f.gets
     total_drop = f.gets.split(",")
     summary_day = f.gets
+  end
+
+  faraotime = ""
+  sleeptime = 0
+  now = Time.now
+  File.open(FILELOCK, 'r') do |lock|
+    #ファラオの沸き時間を取得
+    faraotime = lock.gets
+  end
+  
+  #沸き時間まで待機
+  if now.strftime('%Y%m%d%H%M%S').to_i < faraotime.to_i
+    #sleeptime =  BigDecimal((Time.parse(faraotime) - now).to_s).floor(0).to_f.to_i
+    #sleep sleeptime
+  else
+    File.open(FILELOCK, 'w') do |lock|
+      #ロックファイルの沸き時間を更新
+      lock.puts(now.strftime('%Y%m%d%H%M%S'))
+    end
   end
 end
 
@@ -705,15 +709,15 @@ bot.run :async
 #非同期のため、イベント待機
 loop do
   sleep(0.1)
-  current_day = Time.new
+  now = Time.now
 
   #集計日付が変わっていれば集計値初期化
-  if current_day.strftime('%Y%m%d').to_i > summary_day.to_i
+  if now.strftime('%Y%m%d').to_i > summary_day.to_i
     #初期化前に今日の結果を通知
     msg = get_summary()
     bot.send_message(CHANNELID, msg)
 
-    summary_day = current_day.strftime('%Y%m%d').to_i
+    summary_day = now.strftime('%Y%m%d').to_i
     File.open(FILERESULT, 'w') do |f|
       f.puts("0")
       f.puts("0,0,0,0,0,0,0,0,0")
@@ -722,5 +726,10 @@ loop do
       f.puts(summary_day)
       f.close
     end
+  end
+  
+  #沸き時間が過ぎている場合、オンラインにする
+  if now.strftime('%Y%m%d%H%M%S').to_i >= faraotime.to_i
+    bot.online
   end
 end
