@@ -92,7 +92,8 @@ bot = Discordrb::Commands::CommandBot.new \
     token: setting_auth['bot']['token'], \
     client_id: setting_auth['bot']['client_id'], \
     prefix: "/", \
-    help_command:[:fahelp]
+    help_command:[:fahelp], \
+    command_doesnt_exist_message:"コマンドが見つかりません。\n`/fahelp`を参照してください。"
 
 #ドロップ判定コマンド
 bot.message(containing: EMOJFARAO) do |event|
@@ -401,11 +402,11 @@ bot.message(containing: EMOJDROP4) do |event|
   end
 end
 
-bot.command(:faresult) do |event|
+bot.command(:faresult, description:"これまでの討伐数とドロップ数の集計を表示します。") do |event|
   event.respond get_summary() 
 end
 
-bot.command(:farank) do |event|
+bot.command(:farank, description:"討伐数ランキングを表示します。") do |event|
   rank = []
   down = []
   user_data = []
@@ -508,7 +509,7 @@ bot.command(:farank) do |event|
   event.respond msg
 end
 
-bot.command(:fastatus) do |event|
+bot.command(:fastatus, description:"自分の討伐数とドロップ数を表示します。") do |event|
   rank = []
   down = []
   user_data = []
@@ -572,7 +573,7 @@ bot.command(:fastatus) do |event|
   end
 end
 
-bot.command(:falist) do |event|
+bot.command(:falist, description:"1/500の壁を越えし者達を表示します。") do |event|
   i = 1
   msg = "■1/500の壁を越えし者達\n\n"
   
@@ -587,7 +588,7 @@ bot.command(:falist) do |event|
   event.respond msg
 end
 
-bot.command(:tablist) do |event|
+bot.command(:tablist, description:"ホルグレンに勝利を収めし者達を表示します。") do |event|
   i = 1
   msg = "■ホルグレンに勝利を収めし者達\n\n"
   
@@ -602,7 +603,7 @@ bot.command(:tablist) do |event|
   event.respond msg
 end
 
-bot.command(:farespawn, help_available:false) do |event|
+bot.command(:farespawn, help_available:false, description:"湧き時間の再読み込みを行います。") do |event|
   #バグ沸き時用再スリープコマンド
   #沸き時間
   faraotime = ""
@@ -620,7 +621,7 @@ bot.command(:farespawn, help_available:false) do |event|
   end
 end
 
-bot.command(:fastop, help_available:false) do |event|
+bot.command(:fastop, help_available:false, description:"このBOTを停止させます。") do |event|
   #BOT停止用コマンド
   if event.user.display_name == "Sato"
     bot.stop
