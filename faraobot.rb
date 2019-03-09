@@ -88,7 +88,11 @@ faraotime = ""
 now = Time.now
 
 #接続先BOTの設定
-bot = Discordrb::Bot.new token: setting_auth['bot']['token'], client_id: setting_auth['bot']['client_id']
+bot = Discordrb::Commands::CommandBot.new \
+    token: setting_auth['bot']['token'], \
+    client_id: setting_auth['bot']['client_id'], \
+    prefix: "/", \
+    help_command:[:fahelp]
 
 #ドロップ判定コマンド
 bot.message(containing: EMOJFARAO) do |event|
@@ -397,11 +401,11 @@ bot.message(containing: EMOJDROP4) do |event|
   end
 end
 
-bot.message(containing: "/faresult") do |event|
+bot.command(:faresult) do |event|
   event.respond get_summary() 
 end
 
-bot.message(containing: "/farank") do |event|
+bot.command(:farank) do |event|
   rank = []
   down = []
   user_data = []
@@ -504,7 +508,7 @@ bot.message(containing: "/farank") do |event|
   event.respond msg
 end
 
-bot.message(containing: "/fastatus") do |event|
+bot.command(:fastatus) do |event|
   rank = []
   down = []
   user_data = []
@@ -568,7 +572,7 @@ bot.message(containing: "/fastatus") do |event|
   end
 end
 
-bot.message(containing: "/falist") do |event|
+bot.command(:falist) do |event|
   i = 1
   msg = "■1/500の壁を越えし者達\n\n"
   
@@ -583,7 +587,7 @@ bot.message(containing: "/falist") do |event|
   event.respond msg
 end
 
-bot.message(containing: "/tablist") do |event|
+bot.command(:tablist) do |event|
   i = 1
   msg = "■ホルグレンに勝利を収めし者達\n\n"
   
@@ -598,7 +602,7 @@ bot.message(containing: "/tablist") do |event|
   event.respond msg
 end
 
-bot.message(containing: "/farespawn") do |event|
+bot.command(:farespawn, help_available:false) do |event|
   #バグ沸き時用再スリープコマンド
   #沸き時間
   faraotime = ""
@@ -616,7 +620,7 @@ bot.message(containing: "/farespawn") do |event|
   end
 end
 
-bot.message(containing: "/fastop") do |event|
+bot.command(:fastop, help_available:false) do |event|
   #BOT停止用コマンド
   if event.user.display_name == "Sato"
     bot.stop
