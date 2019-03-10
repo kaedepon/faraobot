@@ -72,17 +72,6 @@ total_down = ""
 total_drop = []
 summary_day = ""
 
-#精錬回数初期化
-total_tab = ""
-File.open(FILETABLET, 'r') do |f2|
-  total_tab = f2.gets
-end
-
-File.open(FILETABLET, 'w') do |f2|
-  f2.puts(total_tab)
-  f2.close
-end
-
 #沸き時間
 faraotime = ""
 now = Time.now
@@ -739,6 +728,17 @@ loop do
       f.puts(total_drop.join(","))
       f.puts(summary_day)
       f.close
+    end
+
+    #精錬回数初期化
+    total_tab = ""
+    File.open(FILETABLET, 'r') do |f2|
+      total_tab = f2.gets
+    end
+
+    File.open(FILETABLET, 'w') do |f2|
+      f2.puts(total_tab)
+      f2.close
     end
   end
   
