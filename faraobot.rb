@@ -704,8 +704,17 @@ def set_online(bot, value)
   @is_online = value
   if @is_online
     bot.online
+    popArea = @setting_farao['location']['area']
+    popDetails = @setting_farao['location']['details']
+    location = ""
+    if popDetails.length > 0
+      random = Random.new
+      location = "【#{popDetails[random.rand(popDetails.length - 1)]}】"
+    end
+    bot.game = "#{location}#{popArea}"
   else
     bot.invisible
+    bot.game = ""
   end
 end
 
