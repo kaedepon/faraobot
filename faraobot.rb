@@ -569,6 +569,7 @@ bot.command(:fastatus, description:"自分の討伐数とドロップ数を表�
       msg = msg + EMOJDROP8 + user_data[9]
       msg = msg + EMOJDROP9 + user_data[10]
       event.respond msg
+      break
     end
   end
 end
