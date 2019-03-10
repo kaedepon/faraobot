@@ -10,6 +10,16 @@
 		"card": "C:\\faraobot\\faraocard.txt",
 		"exp": "C:\\faraobot\\faraoexp.txt"
 	},
+	"location": {
+		"area": "スフィンクスダンジョン５Ｆ",
+		"details": [
+			"右",
+			"左",
+			"上",
+			"下",
+			"入口"
+		]
+	},
 	"drop1": {
 		"emoji": "<:syakujou:123456789012345678>",
 		"border": 5819

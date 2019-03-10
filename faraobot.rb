@@ -6,64 +6,64 @@ require 'bigdecimal'
 require 'json'
 
 # 設定ファイル読み込み
-setting_auth = open('./settings/auth.json') do |io|
+@setting_auth = open('./settings/auth.json') do |io|
   JSON.load(io)
 end
-setting_farao= open('./settings/farao.json') do |io|
+@setting_farao= open('./settings/farao.json') do |io|
   JSON.load(io)
 end
-setting_tablet = open('./settings/tablet.json') do |io|
+@setting_tablet = open('./settings/tablet.json') do |io|
   JSON.load(io)
 end
 
 #定数の設定
 #ドロップ倍率
-DROPRATIO = setting_farao['dropRatio']
+DROPRATIO = @setting_farao['dropRatio']
 
 #メッセージ通知チャンネル
-CHANNELID = setting_auth['bot']['channel_id']
+CHANNELID = @setting_auth['bot']['channel_id']
 
 #ドロップアイテムの絵文字コード
-EMOJDROP1 = setting_farao['drop1']['emoji']
-EMOJDROP2 = setting_farao['drop2']['emoji']
-EMOJDROP3 = setting_farao['drop3']['emoji']
-EMOJDROP4 = setting_farao['drop4']['emoji']
-EMOJDROP5 = setting_farao['drop5']['emoji']
-EMOJDROP6 = setting_farao['drop6']['emoji']
-EMOJDROP7 = setting_farao['drop7']['emoji']
-EMOJDROP8 = setting_farao['drop8']['emoji']
-EMOJDROP9 = setting_farao['drop9']['emoji']
-EMOJDROPEX = setting_farao['dropEx']['emoji']
-EMOJDROPEX2 = setting_farao['dropEx2']['emoji']
-EMOJFARAO = setting_farao['farao']['emoji']
-EMOJNODROP = setting_farao['noDrop']['emoji']
+EMOJDROP1 = @setting_farao['drop1']['emoji']
+EMOJDROP2 = @setting_farao['drop2']['emoji']
+EMOJDROP3 = @setting_farao['drop3']['emoji']
+EMOJDROP4 = @setting_farao['drop4']['emoji']
+EMOJDROP5 = @setting_farao['drop5']['emoji']
+EMOJDROP6 = @setting_farao['drop6']['emoji']
+EMOJDROP7 = @setting_farao['drop7']['emoji']
+EMOJDROP8 = @setting_farao['drop8']['emoji']
+EMOJDROP9 = @setting_farao['drop9']['emoji']
+EMOJDROPEX = @setting_farao['dropEx']['emoji']
+EMOJDROPEX2 = @setting_farao['dropEx2']['emoji']
+EMOJFARAO = @setting_farao['farao']['emoji']
+EMOJNODROP = @setting_farao['noDrop']['emoji']
 
 #ドロップアイテムのドロップ率
-BORDERDROP1 = setting_farao['drop1']['border']
-BORDERDROP2 = setting_farao['drop2']['border']
-BORDERDROP3 = setting_farao['drop3']['border']
-BORDERDROP4 = setting_farao['drop4']['border']
-BORDERDROP5 = setting_farao['drop5']['border']
-BORDERDROP6 = setting_farao['drop6']['border']
-BORDERDROP7 = setting_farao['drop7']['border']
-BORDERDROP8 = setting_farao['drop8']['border']
-BORDERDROP9 = setting_farao['drop9']['border']
-BORDERDROPEX = setting_farao['dropEx']['border']
+BORDERDROP1 = @setting_farao['drop1']['border']
+BORDERDROP2 = @setting_farao['drop2']['border']
+BORDERDROP3 = @setting_farao['drop3']['border']
+BORDERDROP4 = @setting_farao['drop4']['border']
+BORDERDROP5 = @setting_farao['drop5']['border']
+BORDERDROP6 = @setting_farao['drop6']['border']
+BORDERDROP7 = @setting_farao['drop7']['border']
+BORDERDROP8 = @setting_farao['drop8']['border']
+BORDERDROP9 = @setting_farao['drop9']['border']
+BORDERDROPEX = @setting_farao['dropEx']['border']
 
 #精錬成功率
-SEIREN = setting_tablet['seiren']
+SEIREN = @setting_tablet['seiren']
 
 #ファイルパス
-FILELOCK = setting_farao['file']['lock']
-FILERESULT = setting_farao['file']['result']
-FILERANK = setting_farao['file']['rank']
-FILECARD = setting_farao['file']['card']
-FILEEXP = setting_farao['file']['exp']
-FILETABLET = setting_tablet['file']['tablet']
-FILETABLIST = setting_tablet['file']['tablist']
+FILELOCK = @setting_farao['file']['lock']
+FILERESULT = @setting_farao['file']['result']
+FILERANK = @setting_farao['file']['rank']
+FILECARD = @setting_farao['file']['card']
+FILEEXP = @setting_farao['file']['exp']
+FILETABLET = @setting_tablet['file']['tablet']
+FILETABLIST = @setting_tablet['file']['tablist']
 
 #ファラオ経験値
-FARAOEXP = setting_farao['exp']
+FARAOEXP = @setting_farao['exp']
 
 #resultファイルの本日分データ初期化
 today_down = ""
@@ -89,8 +89,8 @@ now = Time.now
 
 #接続先BOTの設定
 bot = Discordrb::Commands::CommandBot.new \
-    token: setting_auth['bot']['token'], \
-    client_id: setting_auth['bot']['client_id'], \
+    token: @setting_auth['bot']['token'], \
+    client_id: @setting_auth['bot']['client_id'], \
     prefix: "/", \
     help_command:[:fahelp], \
     command_doesnt_exist_message:"コマンドが見つかりません。\n`/fahelp`を参照してください。"
@@ -305,7 +305,7 @@ bot.message(containing: EMOJFARAO) do |event|
         
         #次の沸き時間を設定
         now = Time.now
-        sleeptime = setting_farao['sleepBasic'] + random.rand(setting_farao['sleepMargin'])
+        sleeptime = @setting_farao['sleepBasic'] + random.rand(@setting_farao['sleepMargin'])
         
         #ロックファイルの沸き時間を更新
         faraotime = (now + sleeptime).strftime('%Y%m%d%H%M%S')
@@ -704,8 +704,17 @@ def set_online(bot, value)
   @is_online = value
   if @is_online
     bot.online
+    popArea = @setting_farao['location']['area']
+    popDetails = @setting_farao['location']['details']
+    location = ""
+    if popDetails.length > 0
+      random = Random.new
+      location = "【#{popDetails[random.rand(popDetails.length - 1)]}】"
+    end
+    bot.game = "#{location}#{popArea}"
   else
     bot.invisible
+    bot.game = ""
   end
 end
 
