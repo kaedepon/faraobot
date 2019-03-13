@@ -709,41 +709,47 @@ end
 
 bot.run :async
 
-#非同期のため、イベント待機
-loop do
-  sleep(0.1)
-  now = Time.now
+begin
+  #非同期のため、イベント待機
+  loop do
+    sleep(0.1)
+    now = Time.now
 
-  #集計日付が変わっていれば集計値初期化
-  if now.strftime('%Y%m%d').to_i > summary_day.to_i
-    #初期化前に今日の結果を通知
-    msg = get_summary()
-    bot.send_message(CHANNELID, msg)
+    #集計日付が変わっていれば集計値初期化
+    if now.strftime('%Y%m%d').to_i > summary_day.to_i
+      #初期化前に今日の結果を通知
+      msg = get_summary()
+      bot.send_message(CHANNELID, msg)
 
-    summary_day = now.strftime('%Y%m%d').to_i
-    File.open(FILERESULT, 'w') do |f|
-      f.puts("0")
-      f.puts("0,0,0,0,0,0,0,0,0")
-      f.puts(total_down)
-      f.puts(total_drop.join(","))
-      f.puts(summary_day)
-      f.close
+      summary_day = now.strftime('%Y%m%d').to_i
+      File.open(FILERESULT, 'w') do |f|
+        f.puts("0")
+        f.puts("0,0,0,0,0,0,0,0,0")
+        f.puts(total_down)
+        f.puts(total_drop.join(","))
+        f.puts(summary_day)
+        f.close
+      end
+
+      #精錬回数初期化
+      total_tab = ""
+      File.open(FILETABLET, 'r') do |f2|
+        total_tab = f2.gets
+      end
+
+      File.open(FILETABLET, 'w') do |f2|
+        f2.puts(total_tab)
+        f2.close
+      end
     end
-
-    #精錬回数初期化
-    total_tab = ""
-    File.open(FILETABLET, 'r') do |f2|
-      total_tab = f2.gets
-    end
-
-    File.open(FILETABLET, 'w') do |f2|
-      f2.puts(total_tab)
-      f2.close
+    
+    #沸き時間が過ぎている場合、オンラインにする
+    if now.strftime('%Y%m%d%H%M%S').to_i >= faraotime.to_i && !is_online()
+      set_online(bot, true)
     end
   end
-  
-  #沸き時間が過ぎている場合、オンラインにする
-  if now.strftime('%Y%m%d%H%M%S').to_i >= faraotime.to_i && !is_online()
-    set_online(bot, true)
-  end
+rescue SignalException => ex
+  puts "SignalException SIG#{Signal::signame(ex.signo)}(#{ex.signo})"
+  sleep(1)
+  bot.stop
 end
