@@ -66,11 +66,11 @@ FILETABLIST = @setting_tablet['file']['tablist']
 FARAOEXP = @setting_farao['exp']
 
 #resultファイルの本日分データ初期化
-today_down = ""
-today_drop = []
-total_down = ""
-total_drop = []
-summary_day = ""
+@today_down = ""
+@today_drop = []
+@total_down = ""
+@total_drop = []
+@summary_day = ""
 
 #沸き時間
 faraotime = ""
@@ -117,10 +117,10 @@ bot.message(containing: EMOJFARAO) do |event|
         
         #resultファイルから討伐数とドロップ数を取得
         File.open(FILERESULT, 'r') do |f1|
-          today_down = f1.gets
-          today_drop = f1.gets.split(",")
-          total_down = f1.gets
-          total_drop = f1.gets.split(",")
+          @today_down = f1.gets
+          @today_drop = f1.gets.split(",")
+          @total_down = f1.gets
+          @total_drop = f1.gets.split(",")
         end
         
         #rankファイルからランキングデータを取得
@@ -161,8 +161,8 @@ bot.message(containing: EMOJFARAO) do |event|
         #壊れた錫杖
         if random.rand(rate) <= BORDERDROP1
           drop.push(EMOJDROP1)
-          today_drop[0] = today_drop[0].to_i + 1
-          total_drop[0] = total_drop[0].to_i + 1
+          @today_drop[0] = @today_drop[0].to_i + 1
+          @total_drop[0] = @total_drop[0].to_i + 1
           user_data[2] = user_data[2].to_i + 1
         end
         
@@ -174,61 +174,61 @@ bot.message(containing: EMOJFARAO) do |event|
           else
             drop.push(EMOJDROP2)
           end
-          today_drop[1] = today_drop[1].to_i + 1
-          total_drop[1] = total_drop[1].to_i + 1
+          @today_drop[1] = @today_drop[1].to_i + 1
+          @total_drop[1] = @total_drop[1].to_i + 1
           user_data[3] = user_data[3].to_i + 1
         end
         
         #ジュエルクラウン
         if random.rand(rate) <= BORDERDROP3
           drop.push(EMOJDROP3)
-          today_drop[2] = today_drop[2].to_i + 1
-          total_drop[2] = total_drop[2].to_i + 1
+          @today_drop[2] = @today_drop[2].to_i + 1
+          @total_drop[2] = @total_drop[2].to_i + 1
           user_data[4] = user_data[4].to_i + 1
         end
         
         #タブレット
         if random.rand(rate) <= BORDERDROP4
           drop.push(EMOJDROP4)
-          today_drop[3] = today_drop[3].to_i + 1
-          total_drop[3] = total_drop[3].to_i + 1
+          @today_drop[3] = @today_drop[3].to_i + 1
+          @total_drop[3] = @total_drop[3].to_i + 1
           user_data[5] = user_data[5].to_i + 1
         end
         
         #ホーリーローブ
         if random.rand(rate) <= BORDERDROP5
           drop.push(EMOJDROP5)
-          today_drop[4] = today_drop[4].to_i + 1
-          total_drop[4] = total_drop[4].to_i + 1
+          @today_drop[4] = @today_drop[4].to_i + 1
+          @total_drop[4] = @total_drop[4].to_i + 1
           user_data[6] = user_data[6].to_i + 1
         end
         
         #太陽剣
         if random.rand(rate) <= BORDERDROP6
           drop.push(EMOJDROP6)
-          today_drop[5] = today_drop[5].to_i + 1
-          total_drop[5] = total_drop[5].to_i + 1
+          @today_drop[5] = @today_drop[5].to_i + 1
+          @total_drop[5] = @total_drop[5].to_i + 1
           user_data[7] = user_data[7].to_i + 1
         end
         
         #バゼラルド
         if random.rand(rate) <= BORDERDROP7
           drop.push(EMOJDROP7)
-          today_drop[6] = today_drop[6].to_i + 1
-          total_drop[6] = total_drop[6].to_i + 1
+          @today_drop[6] = @today_drop[6].to_i + 1
+          @total_drop[6] = @total_drop[6].to_i + 1
           user_data[8] = user_data[8].to_i + 1
         end
         
         #ファラオカード
         if random.rand(rate) <= BORDERDROP8
           drop.push(EMOJDROP8)
-          today_drop[7] = today_drop[7].to_i + 1
-          total_drop[7] = total_drop[7].to_i + 1
+          @today_drop[7] = @today_drop[7].to_i + 1
+          @total_drop[7] = @total_drop[7].to_i + 1
           user_data[9] = user_data[9].to_i + 1
           
           #cardファイルにカードドロップ者の情報を追記
           File.open(FILECARD, 'a') do |f3|
-            f3.puts(user_name + "　" + (total_down.to_i + 1).to_s + "体目　" + now.strftime('%Y年%m月%d日 %H時%M分%S秒'))
+            f3.puts(user_name + "　" + (@total_down.to_i + 1).to_s + "体目　" + now.strftime('%Y年%m月%d日 %H時%M分%S秒'))
           end
           
           #目立つようにカード画像を表示
@@ -238,8 +238,8 @@ bot.message(containing: EMOJFARAO) do |event|
         #アプローズサンダル
         if random.rand(rate) <= BORDERDROP9
           drop.push(EMOJDROP9)
-          today_drop[8] = today_drop[8].to_i + 1
-          total_drop[8] = total_drop[8].to_i + 1
+          @today_drop[8] = @today_drop[8].to_i + 1
+          @total_drop[8] = @total_drop[8].to_i + 1
           user_data[10] = user_data[10].to_i + 1
         end
         
@@ -274,12 +274,14 @@ bot.message(containing: EMOJFARAO) do |event|
         event.respond mvp + drop.join("") + card
         
         #resultファイルの更新
+        @today_down = @today_down.to_i + 1
+        @total_down = @total_down.to_i + 1
         File.open(FILERESULT, 'w') do |f1|
-          f1.puts(today_down.to_i + 1)
-          f1.puts(today_drop.join(","))
-          f1.puts(total_down.to_i + 1)
-          f1.puts(total_drop.join(","))
-          f1.puts(summary_day.to_i)
+          f1.puts(@today_down.to_i)
+          f1.puts(@today_drop.join(","))
+          f1.puts(@total_down.to_i)
+          f1.puts(@total_drop.join(","))
+          f1.puts(@summary_day.to_i)
           f1.close
         end
         
@@ -317,9 +319,9 @@ bot.message(containing: EMOJDROP4) do |event|
   #タブレットのドロップ数取得
   tabnum = 0
   File.open(FILERESULT, 'r') do |f|
-    today_down = f.gets
-    today_drop = f.gets.split(",")
-    tabnum = today_drop[3].to_i
+    @today_down = f.gets
+    @today_drop = f.gets.split(",")
+    tabnum = @today_drop[3].to_i
   end
   
   #tabletファイルから精錬回数データを取得
@@ -621,11 +623,11 @@ end
 #起動時
 bot.ready do |event|
   File.open(FILERESULT, 'r') do |f|
-    today_down = f.gets
-    today_drop = f.gets.split(",")
-    total_down = f.gets
-    total_drop = f.gets.split(",")
-    summary_day = f.gets
+    @today_down = f.gets
+    @today_drop = f.gets.split(",")
+    @total_down = f.gets
+    @total_drop = f.gets.split(",")
+    @summary_day = f.gets
   end
 
   faraotime = ""
@@ -651,35 +653,35 @@ end
 def get_summary() 
   msg=""
   File.open(FILERESULT, 'r') do |f|
-    today_down = f.gets
-    today_drop = f.gets.split(",")
-    total_down = f.gets
-    total_drop = f.gets.split(",")
+    @today_down = f.gets
+    @today_drop = f.gets.split(",")
+    @total_down = f.gets
+    @total_drop = f.gets.split(",")
     
     msg = "■討伐数\n"
-    msg = msg + "本日：" + today_down
-    msg = msg + "合計：" + total_down + "\n"
+    msg = msg + "本日：" + @today_down
+    msg = msg + "合計：" + @total_down + "\n"
     msg = msg + "■ドロップアイテム\n"
     msg = msg + "本日："
-    msg = msg + EMOJDROP1 + today_drop[0]
-    msg = msg + EMOJDROP2 + today_drop[1]
-    msg = msg + EMOJDROP3 + today_drop[2]
-    msg = msg + EMOJDROP4 + today_drop[3]
-    msg = msg + EMOJDROP5 + today_drop[4]
-    msg = msg + EMOJDROP6 + today_drop[5]
-    msg = msg + EMOJDROP7 + today_drop[6]
-    msg = msg + EMOJDROP8 + today_drop[7]
-    msg = msg + EMOJDROP9 + today_drop[8]
+    msg = msg + EMOJDROP1 + @today_drop[0]
+    msg = msg + EMOJDROP2 + @today_drop[1]
+    msg = msg + EMOJDROP3 + @today_drop[2]
+    msg = msg + EMOJDROP4 + @today_drop[3]
+    msg = msg + EMOJDROP5 + @today_drop[4]
+    msg = msg + EMOJDROP6 + @today_drop[5]
+    msg = msg + EMOJDROP7 + @today_drop[6]
+    msg = msg + EMOJDROP8 + @today_drop[7]
+    msg = msg + EMOJDROP9 + @today_drop[8]
     msg = msg + "合計："
-    msg = msg + EMOJDROP1 + total_drop[0]
-    msg = msg + EMOJDROP2 + total_drop[1]
-    msg = msg + EMOJDROP3 + total_drop[2]
-    msg = msg + EMOJDROP4 + total_drop[3]
-    msg = msg + EMOJDROP5 + total_drop[4]
-    msg = msg + EMOJDROP6 + total_drop[5]
-    msg = msg + EMOJDROP7 + total_drop[6]
-    msg = msg + EMOJDROP8 + total_drop[7]
-    msg = msg + EMOJDROP9 + total_drop[8]
+    msg = msg + EMOJDROP1 + @total_drop[0]
+    msg = msg + EMOJDROP2 + @total_drop[1]
+    msg = msg + EMOJDROP3 + @total_drop[2]
+    msg = msg + EMOJDROP4 + @total_drop[3]
+    msg = msg + EMOJDROP5 + @total_drop[4]
+    msg = msg + EMOJDROP6 + @total_drop[5]
+    msg = msg + EMOJDROP7 + @total_drop[6]
+    msg = msg + EMOJDROP8 + @total_drop[7]
+    msg = msg + EMOJDROP9 + @total_drop[8]
   end
   return msg
 end
@@ -716,18 +718,18 @@ begin
     now = Time.now
 
     #集計日付が変わっていれば集計値初期化
-    if now.strftime('%Y%m%d').to_i > summary_day.to_i
+    if now.strftime('%Y%m%d').to_i > @summary_day.to_i
       #初期化前に今日の結果を通知
       msg = get_summary()
       bot.send_message(CHANNELID, msg)
 
-      summary_day = now.strftime('%Y%m%d').to_i
+      @summary_day = now.strftime('%Y%m%d').to_i
       File.open(FILERESULT, 'w') do |f|
         f.puts("0")
         f.puts("0,0,0,0,0,0,0,0,0")
-        f.puts(total_down)
-        f.puts(total_drop.join(","))
-        f.puts(summary_day)
+        f.puts(@total_down)
+        f.puts(@total_drop.join(","))
+        f.puts(@summary_day)
         f.close
       end
 
