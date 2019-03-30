@@ -5,6 +5,10 @@
 /settings/farao.json
 /settings/tablet.json
 
+## Database
+/data/*.sqlite3
+*.log
+
 ### 
 
 *.gem

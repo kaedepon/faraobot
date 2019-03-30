@@ -729,6 +729,7 @@ def create_database()
   database = Sequel.sqlite(@setting_auth['database']['path'] , options)
   if @setting_auth['database']['logging']
     database.loggers << Logger.new($stdout)
+    database.loggers.push(Logger.new(@setting_auth['database']['logfile']))
   end
 
   return database

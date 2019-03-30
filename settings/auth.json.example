@@ -4,4 +4,9 @@
 		"client_id": 1234567890,
 		"channel_id": 1234567890
 	}
+	"database": {
+		"path": ".\\data\\faraobot.sqlite3",
+		"logging": false,
+		"logfile": ".\\data\\sql.log"
+	}
 }
