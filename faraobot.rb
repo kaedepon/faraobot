@@ -4,6 +4,10 @@ require 'date'
 require 'kconv'
 require 'bigdecimal'
 require 'json'
+require 'sequel'
+require 'sqlite3'
+require 'logger'
+require "ostruct"
 
 # 設定ファイル読み込み
 @setting_auth = open('./settings/auth.json') do |io|
@@ -75,6 +79,9 @@ FARAOEXP = @setting_farao['exp']
 #沸き時間
 faraotime = ""
 now = Time.now
+
+#Database
+@db = nil
 
 #接続先BOTの設定
 bot = Discordrb::Commands::CommandBot.new \
@@ -157,13 +164,15 @@ bot.message(containing: EMOJFARAO) do |event|
         rate = 10000 / DROPRATIO + 1
         drop = []
         card = ""
-        
+        dropCount = OpenStruct.new
+
         #壊れた錫杖
         if random.rand(rate) <= BORDERDROP1
           drop.push(EMOJDROP1)
           @today_drop[0] = @today_drop[0].to_i + 1
           @total_drop[0] = @total_drop[0].to_i + 1
           user_data[2] = user_data[2].to_i + 1
+          dropCount.drop01 = 1
         end
         
         #ツタンカーメンマスク
@@ -177,6 +186,7 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[1] = @today_drop[1].to_i + 1
           @total_drop[1] = @total_drop[1].to_i + 1
           user_data[3] = user_data[3].to_i + 1
+          dropCount.drop02 = 1
         end
         
         #ジュエルクラウン
@@ -185,6 +195,7 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[2] = @today_drop[2].to_i + 1
           @total_drop[2] = @total_drop[2].to_i + 1
           user_data[4] = user_data[4].to_i + 1
+          dropCount.drop03 = 1
         end
         
         #タブレット
@@ -193,6 +204,7 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[3] = @today_drop[3].to_i + 1
           @total_drop[3] = @total_drop[3].to_i + 1
           user_data[5] = user_data[5].to_i + 1
+          dropCount.drop04 = 1
         end
         
         #ホーリーローブ
@@ -201,6 +213,7 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[4] = @today_drop[4].to_i + 1
           @total_drop[4] = @total_drop[4].to_i + 1
           user_data[6] = user_data[6].to_i + 1
+          dropCount.drop05 = 1
         end
         
         #太陽剣
@@ -209,6 +222,7 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[5] = @today_drop[5].to_i + 1
           @total_drop[5] = @total_drop[5].to_i + 1
           user_data[7] = user_data[7].to_i + 1
+          dropCount.drop06 = 1
         end
         
         #バゼラルド
@@ -217,6 +231,7 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[6] = @today_drop[6].to_i + 1
           @total_drop[6] = @total_drop[6].to_i + 1
           user_data[8] = user_data[8].to_i + 1
+          dropCount.drop07 = 1
         end
         
         #ファラオカード
@@ -225,7 +240,8 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[7] = @today_drop[7].to_i + 1
           @total_drop[7] = @total_drop[7].to_i + 1
           user_data[9] = user_data[9].to_i + 1
-          
+          dropCount.drop08 = 1
+
           #cardファイルにカードドロップ者の情報を追記
           File.open(FILECARD, 'a') do |f3|
             f3.puts(user_name + "　" + (@total_down.to_i + 1).to_s + "体目　" + now.strftime('%Y年%m月%d日 %H時%M分%S秒'))
@@ -241,12 +257,14 @@ bot.message(containing: EMOJFARAO) do |event|
           @today_drop[8] = @today_drop[8].to_i + 1
           @total_drop[8] = @total_drop[8].to_i + 1
           user_data[10] = user_data[10].to_i + 1
+          dropCount.drop09 = 1
         end
         
         #パサナカード（ハズレカードなので集計対象外）
         if random.rand(rate) <= BORDERDROP8
           drop.push(EMOJDROP8)
-          
+          dropCount.drop10 = 1
+
           #目立つようにカード画像を表示
           card = card + "\nhttp://ro.silk.to/img/card_l/4099.png"
         end
@@ -254,7 +272,8 @@ bot.message(containing: EMOJFARAO) do |event|
         #マルドゥークカード（ハズレカードなので集計対象外）
         if random.rand(rate) <= BORDERDROP8
           drop.push(EMOJDROP8)
-          
+          dropCount.drop11 = 1
+
           #目立つようにカード画像を表示
           card = card + "\nhttp://ro.silk.to/img/card_l/4112.png"
         end
@@ -262,6 +281,7 @@ bot.message(containing: EMOJFARAO) do |event|
         #闇リンゴ（ハズレアイテムなので集計対象外）
         if random.rand(rate) <= BORDERDROPEX
           drop.push(EMOJDROPEX)
+          dropCount.drop12 = 1
         end
         
         
@@ -284,7 +304,29 @@ bot.message(containing: EMOJFARAO) do |event|
           f1.puts(@summary_day.to_i)
           f1.close
         end
-        
+        #DB登録：討伐時のドロップ情報
+        db_faraohunt = @db[:faraohunt] 
+        db_faraohunt.insert(
+          :hunt_date => now,
+          :user_id => event.user.id,
+          :user_distinct => event.user.distinct,
+          :user_name => event.user.display_name,
+          :user_hunt_count => user_data[1].to_i ,
+          :elapsed_time => hunttime,
+          :drop01 => dropCount.drop01.to_i,
+          :drop02 => dropCount.drop02.to_i,
+          :drop03 => dropCount.drop03.to_i,
+          :drop04 => dropCount.drop04.to_i,
+          :drop05 => dropCount.drop05.to_i,
+          :drop06 => dropCount.drop06.to_i,
+          :drop07 => dropCount.drop07.to_i,
+          :drop08 => dropCount.drop08.to_i,
+          :drop09 => dropCount.drop09.to_i,
+          :drop10 => dropCount.drop10.to_i,
+          :drop11 => dropCount.drop11.to_i,
+          :drop12 => dropCount.drop12.to_i,
+        )
+
         #rankファイルの更新
         rank[idx] = user_data.join(",")
         File.open(FILERANK, 'w') do |f3|
@@ -299,12 +341,19 @@ bot.message(containing: EMOJFARAO) do |event|
         sleeptime = @setting_farao['sleepBasic'] + random.rand(@setting_farao['sleepMargin'])
         
         #ロックファイルの沸き時間を更新
-        faraotime = (now + sleeptime).strftime('%Y%m%d%H%M%S')
+        faraotime_raw = (now + sleeptime)
+        faraotime = faraotime_raw.strftime('%Y%m%d%H%M%S')
         lock.puts(faraotime)
         
         #ファイルロック解除
         lock.flock(File::LOCK_UN)
         
+        #DB登録：ファラオの湧き時間
+        db_faraotime = @db[:faraotime] 
+        db_faraotime.insert(
+          :spawn_date => faraotime_raw,
+        )
+
         lock.close
       end
     end
@@ -388,7 +437,26 @@ bot.message(containing: EMOJDROP4) do |event|
       end
       f3.close
     end
-    
+
+    #DB登録：精錬情報
+    #ユーザー別製錬回数を取得し、+1する
+    db_tabletuser = @db[:tabletuser]
+    ds_tabletuser = db_tabletuser.where(:user_id => event.user.id).first()
+    user_refine_count = 1
+    if !ds_tabletuser.nil?
+      user_refine_count = ds_tabletuser[:user_refine_count].to_i + 1
+    end
+
+    db_tabletrefine = @db[:tabletrefine] 
+    db_tabletrefine.insert(
+      :refine_date => now,
+      :user_id => event.user.id,
+      :user_distinct => event.user.distinct,
+      :user_name => event.user.display_name,
+      :user_refine_count => user_refine_count,
+      :refine_result => value.to_i,
+    )
+
     event.respond msg
   end
 end
@@ -622,6 +690,9 @@ end
 
 #起動時
 bot.ready do |event|
+
+  @db = create_database()
+
   File.open(FILERESULT, 'r') do |f|
     @today_down = f.gets
     @today_drop = f.gets.split(",")
@@ -647,6 +718,21 @@ bot.ready do |event|
       sleep(1)
     end
   end
+end
+
+#DBインスタンス生成
+def create_database()
+  #何かオプションを指定する場合は下記に追記する
+  options = {:encoding=>"utf8"}
+  
+  #DBに接続
+  database = Sequel.sqlite(@setting_auth['database']['path'] , options)
+  if @setting_auth['database']['logging']
+    database.loggers << Logger.new($stdout)
+    database.loggers.push(Logger.new(@setting_auth['database']['logfile']))
+  end
+
+  return database
 end
 
 #resultファイルから討伐数とドロップアイテム数を取得し表示
@@ -753,5 +839,6 @@ begin
 rescue SignalException => ex
   puts "SignalException SIG#{Signal::signame(ex.signo)}(#{ex.signo})"
   sleep(1)
+  @db.disconnect
   bot.stop
 end

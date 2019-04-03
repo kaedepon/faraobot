@@ -1,0 +1,4 @@
+CREATE TABLE "faraotime" (
+	"time_seq"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"spawn_date"	DATE NOT NULL
+)
