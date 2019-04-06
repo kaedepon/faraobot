@@ -24,8 +24,5 @@ FROM
       faraohunt
   )
 GROUP BY
-  strftime(
-    '%Y/%m/%d',
-    refine_date
-  )
+  refine_date
 ;
