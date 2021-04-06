@@ -248,7 +248,7 @@ bot.message(containing: EMOJFARAO) do |event|
           end
           
           #目立つようにカード画像を表示
-          card = card + "\nhttp://ro.silk.to/img/card_l/4148.png"
+          card = card + "\nhttps://rotool.gungho.jp/icon/4148.png"
         end
         
         #アプローズサンダル
@@ -266,7 +266,7 @@ bot.message(containing: EMOJFARAO) do |event|
           dropCount.drop10 = 1
 
           #目立つようにカード画像を表示
-          card = card + "\nhttp://ro.silk.to/img/card_l/4099.png"
+          card = card + "\nhttps://rotool.gungho.jp/icon/4099.png"
         end
         
         #マルドゥークカード（ハズレカードなので集計対象外）
@@ -275,7 +275,7 @@ bot.message(containing: EMOJFARAO) do |event|
           dropCount.drop11 = 1
 
           #目立つようにカード画像を表示
-          card = card + "\nhttp://ro.silk.to/img/card_l/4112.png"
+          card = card + "\nhttps://rotool.gungho.jp/icon/4112.png"
         end
         
         #闇リンゴ（ハズレアイテムなので集計対象外）
