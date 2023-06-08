@@ -120,7 +120,7 @@ bot.message(containing: EMOJFARAO) do |event|
         hunttext = hunttext + ((huntmilsec * 100).floor).to_s
         
         #MVP文を設定
-        mvp = event.user.display_name + "：おめでとうございます、MVPです！！　討伐時間：" + hunttext + "\n"
+        mvp = get_display_name(bot, event.user) + "：おめでとうございます、MVPです！！　討伐時間：" + hunttext + "\n"
         
         #resultファイルから討伐数とドロップ数を取得
         File.open(FILERESULT, 'r') do |f1|
@@ -141,7 +141,7 @@ bot.message(containing: EMOJFARAO) do |event|
         #ランキングデータから発言者のデータを取得
         idx = -1
         user_data = []
-        user_name = event.user.display_name
+        user_name = get_display_name(bot, event.user)
         for i in 0..rank.length-1 do
           user_data = rank[i].split(",")
           if user_name == user_data[0]
@@ -310,7 +310,7 @@ bot.message(containing: EMOJFARAO) do |event|
           :hunt_date => now,
           :user_id => event.user.id,
           :user_distinct => event.user.distinct,
-          :user_name => event.user.display_name,
+          :user_name => get_display_name(bot, event.user),
           :user_hunt_count => user_data[1].to_i ,
           :elapsed_time => hunttime,
           :drop01 => dropCount.drop01.to_i,
@@ -389,7 +389,7 @@ bot.message(containing: EMOJDROP4) do |event|
   #精錬回数データから発言者のデータを取得
   idx = -1
   user_data = []
-  user_name = event.user.display_name
+  user_name = get_display_name(bot, event.user)
   for i in 1..tabdata.length-1 do
     user_data = tabdata[i].split(",")
     if user_name == user_data[0]
@@ -452,7 +452,7 @@ bot.message(containing: EMOJDROP4) do |event|
       :refine_date => now,
       :user_id => event.user.id,
       :user_distinct => event.user.distinct,
-      :user_name => event.user.display_name,
+      :user_name => get_display_name(bot, event.user),
       :user_refine_count => user_refine_count,
       :refine_result => value.to_i,
     )
@@ -519,9 +519,10 @@ bot.command(:farank, description:"討伐数ランキングを表示します。"
     end
   end
   
+  user_name = get_display_name(bot, event.user)
   for i in 0..rank.length-1 do
     user_data = rank[i].split(",")
-    if user_data[0] == event.user.display_name
+    if user_data[0] == user_name
       #表示を始める順位を設定
       if i < 2
         disprank = 0
@@ -589,9 +590,10 @@ bot.command(:fastatus, description:"自分の討伐数とドロップ数を表�
   end
   
   #発言者のデータを表示
+  user_name = get_display_name(bot, event.user)
   for i in 0..rank.length-1 do
     user_data = rank[i].split(",")
-    if user_data[0] == event.user.display_name
+    if user_data[0] == user_name
       #Lvを算出
       for j in 0..exp.length-1 do
         exp_data = exp[j].split(",")
@@ -683,7 +685,7 @@ end
 
 bot.command(:fastop, help_available:false, description:"このBOTを停止させます。") do |event|
   #BOT停止用コマンド
-  if event.user.display_name == "Sato"
+  if get_display_name(bot, event.user) == "Sato"
     bot.stop
   end
 end
@@ -793,6 +795,13 @@ def set_online(bot, value)
     bot.invisible
     bot.game = ""
   end
+end
+
+#表示名の取得（新方式の名前システム対応）
+def get_display_name(bot, user)
+  profile = Discordrb::API::User.resolve(bot.token, user.id.resolve_id)
+  userdata = JSON.parse(profile)
+  user.nickname || userdata['global_name'] || user.display_name
 end
 
 bot.run :async
